@@ -1,0 +1,11 @@
+# Claude Code - lokale indstillinger (maskin-specifikke, skal ikke committes)
+.claude/settings.local.json
+
+# OS-filer
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
