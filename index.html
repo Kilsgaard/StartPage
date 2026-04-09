@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Startside</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f1117'/><rect x='3' y='3' width='12' height='12' rx='3' fill='%236366f1'/><rect x='17' y='3' width='12' height='12' rx='3' fill='%23818cf8' opacity='.75'/><rect x='3' y='17' width='12' height='12' rx='3' fill='%23818cf8' opacity='.75'/><rect x='17' y='17' width='12' height='12' rx='3' fill='%23a5b4fc' opacity='.5'/></svg>">
+  <meta name="theme-color" content="#0f1117">
+  <meta property="og:title" content="Startside">
+  <meta property="og:description" content="Min personlige startside med links fra Raindrop">
+  <style>
+    :root {
+      --text-primary:   #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted:     #64748b;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-family);
+      background: #0f1117;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    /* --- Header --- */
+    header { text-align: center; margin-bottom: 48px; }
+
+    .clock {
+      font-size: 64px;
+      font-weight: 200;
+      letter-spacing: 4px;
+      color: var(--text-primary);
+    }
+
+    .date { font-size: 16px; color: var(--text-secondary); margin-top: 8px; }
+
+    .search-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .search-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      width: 480px;
+      padding: 12px 20px;
+      border-radius: 24px;
+      border: 1px solid #334155;
+      background: #1e2533;
+      color: var(--text-primary);
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-bar input:focus { border-color: #6366f1; }
+    .search-bar input::placeholder { color: var(--text-muted); }
+
+    .engine-toggle {
+      display: flex;
+      gap: 6px;
+    }
+
+    .engine-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px 5px 14px;
+      border-radius: 20px;
+      border: 1px solid #334155;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .engine-btn:hover { border-color: #6366f1; color: var(--text-primary); }
+    .engine-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+
+    .engine-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 10px;
+      opacity: 0.5;
+      transition: opacity 0.15s, background 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .engine-btn:hover .engine-open,
+    .engine-btn.active .engine-open { opacity: 1; }
+    .engine-open:hover { background: rgba(255,255,255,0.2); opacity: 1; }
+
+    /* --- Settings button --- */
+    .settings-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: #1e2533;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .settings-btn:hover { border-color: #6366f1; color: var(--text-primary); }
+
+    .refresh-btn {
+      position: fixed;
+      top: 16px;
+      right: 120px;
+      background: #1e2533;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s, transform 0.4s;
+    }
+    .refresh-btn:hover { border-color: #6366f1; color: var(--text-primary); }
+    .refresh-btn.spinning { transform: rotate(360deg); }
+
+    /* --- Setup overlay --- */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .overlay.visible { display: flex; }
+
+    .setup-box {
+      background: #1e2533;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      width: 460px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .setup-box h2 { font-size: 18px; margin-bottom: 8px; }
+    .setup-box p { font-size: 13px; color: #94a3b8; margin-bottom: 24px; line-height: 1.6; }
+    .setup-box label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+
+    .setup-box input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f1117;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: monospace;
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .setup-box input[type="text"]:focus { border-color: #6366f1; }
+
+    .setup-box .row { display: flex; gap: 10px; margin-top: 8px; }
+
+    /* --- Font picker --- */
+    .font-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .font-chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid #334155;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .font-chip:hover { border-color: #6366f1; color: #e2e8f0; }
+    .font-chip.selected { background: #6366f1; border-color: #6366f1; color: #fff; }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #6366f1; color: #fff; }
+    .btn-ghost { background: #2d3748; color: #e2e8f0; }
+
+    .setup-divider {
+      border: none;
+      border-top: 1px solid #2d3748;
+      margin: 20px 0 16px;
+    }
+
+    .swatch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .swatch:hover { transform: scale(1.1); }
+    .swatch.selected { border-color: #6366f1; }
+    .swatch.selected::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .color-row input[type="color"] {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      background: none;
+      cursor: pointer;
+      padding: 2px;
+    }
+    .color-row span { font-size: 12px; color: #64748b; }
+
+    /* --- Background overlay for images --- */
+    #bgOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 0;
+      pointer-events: none;
+    }
+    body.has-bg-image #bgOverlay { display: block; }
+    body.has-bg-image header,
+    body.has-bg-image main { position: relative; z-index: 1; }
+
+    body.has-bg-image .settings-btn { z-index: 101; }
+
+    /* Tekst-skygge når der er baggrundsbillede */
+    body.has-bg-image .clock,
+    body.has-bg-image .date {
+      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+    }
+    body.has-bg-image .section-title,
+    body.has-bg-image .section-count {
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+
+    /* Kort: lidt mere opak og frosted-glass effekt */
+    body.has-bg-image .link-card {
+      background: rgba(20,26,40,0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    body.has-bg-image .link-card:hover {
+      background: rgba(30,38,58,0.85);
+    }
+
+    /* --- Pinned links --- */
+    .pinned-section {
+      max-width: 960px;
+      margin: 0 auto 36px;
+    }
+    .pinned-section[hidden] { display: none; }
+    .pinned-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .pinned-card {
+      background: #1e2533;
+      border: 1px solid #6366f1;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .pinned-card:hover {
+      background: #262f42;
+      border-color: #818cf8;
+      transform: translateY(-1px);
+    }
+    .pinned-card[hidden] { display: none; }
+    body.has-bg-image .pinned-card {
+      background: rgba(20,26,40,0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    body.has-bg-image .pinned-card:hover { background: rgba(30,38,58,0.85); }
+
+    /* --- Main content --- */
+    main { max-width: 960px; margin: 0 auto; }
+
+    .section { margin-bottom: 40px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+      width: fit-content;
+    }
+    .section-header:hover .section-title { color: var(--text-secondary); }
+
+    .section-chevron {
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      display: inline-block;
+      margin-right: 2px;
+    }
+    .section.collapsed .section-chevron { transform: rotate(-90deg); }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    .section-count {
+      font-size: 11px;
+      background: #2d3748;
+      color: var(--text-muted);
+      padding: 1px 7px;
+      border-radius: 10px;
+    }
+
+    .link-grid-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.25s ease, opacity 0.2s ease;
+      opacity: 1;
+    }
+    .section.collapsed .link-grid-wrap {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+    .link-grid-wrap > .link-grid {
+      overflow: hidden;
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .link-card {
+      background: #1e2533;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .link-card:hover {
+      background: #262f42;
+      border-color: #6366f1;
+      transform: translateY(-1px);
+    }
+
+    .link-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .link-icon img { width: 20px; height: 20px; object-fit: contain; }
+    .link-icon .emoji { font-size: 16px; }
+
+    .link-text {
+      min-width: 0;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .link-label {
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .link-domain {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* --- Status --- */
+    .status {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .status.error { color: #f87171; }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #334155;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeup {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Refresh button -->
+<button class="refresh-btn" id="refreshBtn" title="Opdater links">↻</button>
+
+<!-- Settings button -->
+<button class="settings-btn" id="settingsBtn">Indstillinger</button>
+
+<!-- Setup overlay -->
+<div class="overlay" id="overlay">
+  <div class="setup-box">
+    <h2>Raindrop API Token</h2>
+    <p>
+      Hent din test-token fra<br>
+      <strong>app.raindrop.io → Settings → Integrations → Create test token</strong><br><br>
+      Tokenen gemmes kun i din browser (localStorage).
+    </p>
+    <label>API Token</label>
+    <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+    <label>StartPage collection navn</label>
+    <input type="text" id="collectionInput" placeholder="StartPage">
+
+    <hr class="setup-divider">
+    <label>Genvej 1</label>
+    <input type="text" id="pinned1Url"   placeholder="https://intranet.firma.dk">
+    <input type="text" id="pinned1Name"  placeholder="Navn (fx KMC Intranet)">
+    <input type="text" id="pinned1Emoji" placeholder="Emoji (fx 🏢)" style="width:160px;margin-bottom:16px">
+    <label>Genvej 2</label>
+    <input type="text" id="pinned2Url"   placeholder="https://...">
+    <input type="text" id="pinned2Name"  placeholder="Navn">
+    <input type="text" id="pinned2Emoji" placeholder="Emoji (fx 🔗)" style="width:160px;margin-bottom:16px">
+
+    <hr class="setup-divider">
+    <label>Baggrundsfarve</label>
+    <div class="swatch-grid" id="swatchGrid"></div>
+    <div class="color-row">
+      <input type="color" id="customColor" title="Vælg egen farve">
+      <span>Eller vælg en brugerdefineret farve</span>
+    </div>
+
+    <label>Baggrundsbillede</label>
+    <input type="text" id="bgImageInput" placeholder="https://... eller vælg en lokal fil nedenfor" style="margin-bottom:8px">
+    <div class="color-row" style="margin-bottom:0">
+      <label for="bgFileInput" class="btn btn-ghost" style="cursor:pointer;padding:8px 14px;font-size:12px;margin-bottom:0">
+        Vælg fil...
+      </label>
+      <span id="bgFileName" style="font-size:12px;color:#64748b">Ingen fil valgt</span>
+      <input type="file" id="bgFileInput" accept="image/*" style="display:none">
+    </div>
+
+    <hr class="setup-divider">
+    <label>Skrifttype</label>
+    <div class="font-grid" id="fontGrid"></div>
+
+    <label>Tekstfarve</label>
+    <div class="color-row" style="margin-bottom:4px">
+      <input type="color" id="textColorPrimary" title="Primær tekst" value="#e2e8f0">
+      <span>Primær tekst (overskrifter, links)</span>
+    </div>
+    <div class="color-row" style="margin-bottom:16px">
+      <input type="color" id="textColorSecondary" title="Sekundær tekst" value="#94a3b8">
+      <span>Sekundær tekst (dato, domæne)</span>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" id="saveBtn">Gem og indlæs</button>
+      <button class="btn btn-ghost" id="cancelBtn">Annuller</button>
+    </div>
+  </div>
+</div>
+
+<div id="bgOverlay"></div>
+
+<header>
+  <div class="clock" id="clock">00:00</div>
+  <div class="date" id="date"></div>
+  <div class="search-bar">
+    <div class="search-input-row">
+      <input type="text" placeholder="Søg..." id="search">
+    </div>
+    <div class="engine-toggle" id="engineToggle"></div>
+  </div>
+</header>
+
+<div class="pinned-section" id="pinnedSection" hidden>
+  <div class="pinned-grid">
+    <a class="pinned-card" id="pinnedCard1" target="_blank" rel="noopener" hidden>
+      <div class="link-icon"><span class="emoji" id="pinnedEmoji1">🏢</span></div>
+      <div class="link-text">
+        <div class="link-label" id="pinnedName1"></div>
+        <div class="link-domain" id="pinnedDomain1"></div>
+      </div>
+    </a>
+    <a class="pinned-card" id="pinnedCard2" target="_blank" rel="noopener" hidden>
+      <div class="link-icon"><span class="emoji" id="pinnedEmoji2">🔗</span></div>
+      <div class="link-text">
+        <div class="link-label" id="pinnedName2"></div>
+        <div class="link-domain" id="pinnedDomain2"></div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<main id="main">
+  <div class="status" id="status">
+    <span class="spinner"></span> Indlæser...
+  </div>
+</main>
+
+<script>
+  const API = "https://api.raindrop.io/rest/v1";
+
+  // --- Storage helpers ---
+  const getToken = () => localStorage.getItem("rd_token") || "";
+  const getParentName = () => localStorage.getItem("rd_parent") || "StartPage";
+  const setToken = t => localStorage.setItem("rd_token", t);
+  const setParentName = n => localStorage.setItem("rd_parent", n);
+
+  // --- Background ---
+  const bgPresets = [
+    { color: "#0f1117", label: "Standard" },
+    { color: "#0d1b2a", label: "Nat blå" },
+    { color: "#1a0a2e", label: "Lilla" },
+    { color: "#0a1f0a", label: "Skov" },
+    { color: "#1a1008", label: "Varm" },
+    { color: "#1a0808", label: "Rød" },
+    { color: "#08181a", label: "Petroleum" },
+    { color: "#111111", label: "Sort" },
+  ];
+
+  function applyBackground() {
+    const type  = localStorage.getItem("rd_bg_type")  || "color";
+    const value = localStorage.getItem("rd_bg_value") || "#0f1117";
+    if (type === "image") {
+      document.body.style.background = `url('${value}') center/cover no-repeat fixed`;
+      document.body.classList.add("has-bg-image");
+    } else {
+      document.body.style.background = value;
+      document.body.classList.remove("has-bg-image");
+    }
+  }
+
+  function renderSwatches() {
+    const grid = document.getElementById("swatchGrid");
+    const current = localStorage.getItem("rd_bg_value") || "#0f1117";
+    grid.innerHTML = "";
+    bgPresets.forEach(p => {
+      const s = document.createElement("div");
+      s.className = "swatch" + (p.color === current ? " selected" : "");
+      s.style.background = p.color;
+      s.title = p.label;
+      s.addEventListener("click", () => {
+        document.getElementById("bgImageInput").value = "";
+        document.getElementById("customColor").value = p.color;
+        grid.querySelectorAll(".swatch").forEach(x => x.classList.remove("selected"));
+        s.classList.add("selected");
+      });
+      grid.appendChild(s);
+    });
+  }
+
+  document.getElementById("customColor").addEventListener("input", () => {
+    document.getElementById("bgImageInput").value = "";
+    document.getElementById("bgFileName").textContent = "Ingen fil valgt";
+    document.getElementById("swatchGrid").querySelectorAll(".swatch").forEach(x => x.classList.remove("selected"));
+  });
+
+  document.getElementById("bgImageInput").addEventListener("input", () => {
+    document.getElementById("bgFileName").textContent = "Ingen fil valgt";
+  });
+
+  document.getElementById("bgFileInput").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById("bgImageInput").value = ev.target.result; // data URL
+      document.getElementById("bgFileName").textContent = file.name;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  applyBackground();
+
+  // --- Pinned links ---
+  function applyPinned() {
+    const links = [
+      { url: localStorage.getItem("rd_pinned1_url") || "", name: localStorage.getItem("rd_pinned1_name") || "", emoji: localStorage.getItem("rd_pinned1_emoji") || "🏢", cardId: "pinnedCard1", nameId: "pinnedName1", domainId: "pinnedDomain1", emojiId: "pinnedEmoji1" },
+      { url: localStorage.getItem("rd_pinned2_url") || "", name: localStorage.getItem("rd_pinned2_name") || "", emoji: localStorage.getItem("rd_pinned2_emoji") || "🔗", cardId: "pinnedCard2", nameId: "pinnedName2", domainId: "pinnedDomain2", emojiId: "pinnedEmoji2" },
+    ];
+    let anyVisible = false;
+    links.forEach(l => {
+      const card = document.getElementById(l.cardId);
+      if (!l.url) { card.hidden = true; return; }
+      card.hidden = false;
+      card.href = l.url;
+      document.getElementById(l.emojiId).textContent = l.emoji || (l.cardId === "pinnedCard1" ? "🏢" : "🔗");
+      document.getElementById(l.nameId).textContent = l.name || l.url;
+      try { document.getElementById(l.domainId).textContent = new URL(l.url).hostname.replace("www.", ""); }
+      catch { document.getElementById(l.domainId).textContent = ""; }
+      anyVisible = true;
+    });
+    document.getElementById("pinnedSection").hidden = !anyVisible;
+  }
+
+  applyPinned();
+
+  // --- Font & Text color ---
+  const fontOptions = [
+    { label: "System",      value: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+    { label: "Inter",       value: "'Inter', sans-serif",          google: "Inter" },
+    { label: "Roboto",      value: "'Roboto', sans-serif",         google: "Roboto" },
+    { label: "Lato",        value: "'Lato', sans-serif",           google: "Lato" },
+    { label: "Open Sans",   value: "'Open Sans', sans-serif",      google: "Open+Sans" },
+    { label: "Nunito",      value: "'Nunito', sans-serif",         google: "Nunito" },
+    { label: "Merriweather",value: "'Merriweather', serif",        google: "Merriweather" },
+    { label: "Source Code", value: "'Source Code Pro', monospace", google: "Source+Code+Pro" },
+  ];
+
+  function loadGoogleFont(googleName) {
+    if (!googleName) return;
+    const id = `gf-${googleName}`;
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id   = id;
+    link.rel  = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${googleName}:wght@300;400;500;600&display=swap`;
+    document.head.appendChild(link);
+  }
+
+  function applyTypography() {
+    const font      = localStorage.getItem("rd_font")            || fontOptions[0].value;
+    const primary   = localStorage.getItem("rd_text_primary")   || "#e2e8f0";
+    const secondary = localStorage.getItem("rd_text_secondary") || "#94a3b8";
+
+    document.documentElement.style.setProperty("--font-family",    font);
+    document.documentElement.style.setProperty("--text-primary",   primary);
+    document.documentElement.style.setProperty("--text-secondary", secondary);
+    document.documentElement.style.setProperty("--text-muted",     secondary); // muted følger secondary
+
+    // Load Google Font if needed
+    const match = fontOptions.find(f => f.value === font);
+    if (match && match.google) loadGoogleFont(match.google);
+  }
+
+  function renderFontGrid() {
+    const grid    = document.getElementById("fontGrid");
+    const current = localStorage.getItem("rd_font") || fontOptions[0].value;
+    grid.innerHTML = "";
+    fontOptions.forEach(f => {
+      const chip = document.createElement("button");
+      chip.className = "font-chip" + (f.value === current ? " selected" : "");
+      chip.textContent = f.label;
+      chip.style.fontFamily = f.value;
+      if (f.google) loadGoogleFont(f.google); // pre-load so preview shows immediately
+      chip.addEventListener("click", () => {
+        grid.querySelectorAll(".font-chip").forEach(c => c.classList.remove("selected"));
+        chip.classList.add("selected");
+      });
+      grid.appendChild(chip);
+    });
+  }
+
+  applyTypography();
+
+  // --- Clock ---
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").textContent =
+      now.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("date").textContent =
+      now.toLocaleDateString("da-DK", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // --- Search engines ---
+  // url: direct query in URL | clipboard: copy text, open page
+  const engines = [
+    { id: "google",  label: "Google",  homeUrl: "https://www.google.com",       url: q => `https://www.google.com/search?q=${encodeURIComponent(q)}` },
+    { id: "bing",    label: "Bing",    homeUrl: "https://www.bing.com",          url: q => `https://www.bing.com/search?q=${encodeURIComponent(q)}` },
+    { id: "copilot", label: "Copilot", homeUrl: "https://m365.cloud.microsoft/chat", clipboard: true, url: () => "https://m365.cloud.microsoft/chat" },
+    { id: "chatgpt", label: "ChatGPT", homeUrl: "https://chatgpt.com",           clipboard: true, url: () => "https://chatgpt.com/" },
+    { id: "claude",  label: "Claude",  homeUrl: "https://claude.ai",             clipboard: true, url: () => "https://claude.ai/new" },
+  ];
+
+  const savedEngineId = localStorage.getItem("rd_engine") || engines[0].id;
+  let activeEngine = engines.find(e => e.id === savedEngineId) || engines[0];
+
+  // Render engine buttons
+  const toggleEl = document.getElementById("engineToggle");
+  engines.forEach(eng => {
+    const btn = document.createElement("button");
+    btn.className = "engine-btn" + (eng.id === activeEngine.id ? " active" : "");
+    btn.innerHTML = `<span>${eng.label}</span><a class="engine-open" href="${eng.homeUrl}" target="_blank" rel="noopener" title="Åbn ${eng.label}">↗</a>`;
+
+    // Stop ↗ link from triggering the button click
+    btn.querySelector(".engine-open").addEventListener("click", e => e.stopPropagation());
+
+    btn.addEventListener("click", async () => {
+      const q = document.getElementById("search").value.trim();
+      if (q) {
+        // Text in field → search immediately with this engine
+        await doSearch(eng, q);
+      } else {
+        // Empty field → just select engine
+        activeEngine = eng;
+        localStorage.setItem("rd_engine", eng.id);
+        toggleEl.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("search").focus();
+      }
+    });
+    toggleEl.appendChild(btn);
+  });
+
+  async function doSearch(eng, q) {
+    if (eng.clipboard) {
+      await navigator.clipboard.writeText(q);
+      showToast(`Kopieret — tryk Ctrl+V i ${eng.label}`);
+    }
+    window.open(eng.url(q), "_blank");
+  }
+
+  document.getElementById("search").addEventListener("keydown", async e => {
+    if (e.key === "Enter") {
+      const q = e.target.value.trim();
+      if (q) await doSearch(activeEngine, q);
+    }
+  });
+
+  function showToast(msg) {
+    const t = document.createElement("div");
+    t.textContent = msg;
+    t.style.cssText = `
+      position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+      background:#6366f1; color:#fff; padding:10px 20px; border-radius:8px;
+      font-size:13px; font-weight:500; z-index:200;
+      animation: fadeup 0.2s ease;
+    `;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // --- Settings overlay ---
+  const overlay = document.getElementById("overlay");
+
+  function openSettings() {
+    document.getElementById("tokenInput").value = getToken();
+    document.getElementById("collectionInput").value = getParentName();
+
+    const bgType  = localStorage.getItem("rd_bg_type")  || "color";
+    const bgValue = localStorage.getItem("rd_bg_value") || "#0f1117";
+    document.getElementById("customColor").value  = bgType === "color" ? bgValue : "#0f1117";
+    document.getElementById("bgImageInput").value = bgType === "image" ? bgValue : "";
+    renderSwatches();
+
+    // Pinned links
+    document.getElementById("pinned1Url").value   = localStorage.getItem("rd_pinned1_url")   || "";
+    document.getElementById("pinned1Name").value  = localStorage.getItem("rd_pinned1_name")  || "";
+    document.getElementById("pinned1Emoji").value = localStorage.getItem("rd_pinned1_emoji") || "";
+    document.getElementById("pinned2Url").value   = localStorage.getItem("rd_pinned2_url")   || "";
+    document.getElementById("pinned2Name").value  = localStorage.getItem("rd_pinned2_name")  || "";
+    document.getElementById("pinned2Emoji").value = localStorage.getItem("rd_pinned2_emoji") || "";
+
+    // Font & text colors
+    renderFontGrid();
+    document.getElementById("textColorPrimary").value   = localStorage.getItem("rd_text_primary")   || "#e2e8f0";
+    document.getElementById("textColorSecondary").value = localStorage.getItem("rd_text_secondary") || "#94a3b8";
+
+    overlay.classList.add("visible");
+  }
+
+  document.getElementById("settingsBtn").addEventListener("click", openSettings);
+  document.getElementById("cancelBtn").addEventListener("click", () => overlay.classList.remove("visible"));
+  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("visible"); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") overlay.classList.remove("visible"); });
+
+  document.getElementById("refreshBtn").addEventListener("click", () => {
+    const btn = document.getElementById("refreshBtn");
+    btn.classList.add("spinning");
+    setTimeout(() => btn.classList.remove("spinning"), 400);
+    loadLinks();
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const token = document.getElementById("tokenInput").value.trim();
+    const parent = document.getElementById("collectionInput").value.trim() || "StartPage";
+    if (!token) return alert("Indtast venligst en token.");
+    setToken(token);
+    setParentName(parent);
+
+    // Gem baggrund
+    const imgUrl = document.getElementById("bgImageInput").value.trim();
+    if (imgUrl) {
+      localStorage.setItem("rd_bg_type",  "image");
+      localStorage.setItem("rd_bg_value", imgUrl);
+    } else {
+      localStorage.setItem("rd_bg_type",  "color");
+      localStorage.setItem("rd_bg_value", document.getElementById("customColor").value);
+    }
+    applyBackground();
+
+    // Gem pinned links
+    localStorage.setItem("rd_pinned1_url",   document.getElementById("pinned1Url").value.trim());
+    localStorage.setItem("rd_pinned1_name",  document.getElementById("pinned1Name").value.trim());
+    localStorage.setItem("rd_pinned1_emoji", document.getElementById("pinned1Emoji").value.trim());
+    localStorage.setItem("rd_pinned2_url",   document.getElementById("pinned2Url").value.trim());
+    localStorage.setItem("rd_pinned2_name",  document.getElementById("pinned2Name").value.trim());
+    localStorage.setItem("rd_pinned2_emoji", document.getElementById("pinned2Emoji").value.trim());
+    applyPinned();
+
+    // Gem font
+    const selectedChip = document.querySelector("#fontGrid .font-chip.selected");
+    if (selectedChip) {
+      const fontMatch = fontOptions.find(f => f.label === selectedChip.textContent);
+      if (fontMatch) localStorage.setItem("rd_font", fontMatch.value);
+    }
+
+    // Gem tekstfarver
+    localStorage.setItem("rd_text_primary",   document.getElementById("textColorPrimary").value);
+    localStorage.setItem("rd_text_secondary", document.getElementById("textColorSecondary").value);
+
+    applyTypography();
+
+    overlay.classList.remove("visible");
+    loadLinks();
+  });
+
+  // --- Raindrop API ---
+  async function rdFetch(path) {
+    const res = await fetch(`${API}${path}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    });
+    if (!res.ok) throw new Error(`API fejl: ${res.status} ${res.statusText}`);
+    return res.json();
+  }
+
+  async function loadLinks() {
+    const main = document.getElementById("main");
+    main.innerHTML = '<div class="status"><span class="spinner"></span> Henter collections...</div>';
+
+    const token = getToken();
+    if (!token) {
+      main.innerHTML = '<div class="status">Ingen token konfigureret — klik på <strong>Indstillinger</strong> for at komme i gang.</div>';
+      openSettings();
+      return;
+    }
+
+    try {
+      // Hent alle root-collections og child-collections
+      const [rootData, childData] = await Promise.all([
+        rdFetch("/collections"),
+        rdFetch("/collections/childrens")
+      ]);
+
+      const allCollections = [...(rootData.items || []), ...(childData.items || [])];
+      const parentName = getParentName();
+
+      // Find StartPage (eller hvad brugeren har navngivet det)
+      const parent = allCollections.find(c => c.title.toLowerCase() === parentName.toLowerCase());
+
+      if (!parent) {
+        main.innerHTML = `<div class="status error">Collection "${parentName}" ikke fundet. Tjek indstillinger.</div>`;
+        return;
+      }
+
+      // Find alle child collections under StartPage
+      const children = allCollections.filter(c => c.parent && c.parent.$id === parent._id);
+
+      if (children.length === 0) {
+        main.innerHTML = `<div class="status error">Ingen under-collections fundet i "${parentName}".</div>`;
+        return;
+      }
+
+      // Hent raindrops for hvert barn parallelt
+      const sectionsData = await Promise.all(
+        children.map(async col => {
+          const data = await rdFetch(`/raindrops/${col._id}?perpage=250`);
+          return { title: col.title, items: data.items || [] };
+        })
+      );
+
+      renderSections(sectionsData);
+
+    } catch (err) {
+      console.error(err);
+      main.innerHTML = `<div class="status error">Fejl: ${err.message}</div>`;
+    }
+  }
+
+  // --- Render ---
+  function cleanTitle(title, domain) {
+    if (!title) return domain;
+    // Fjern alt efter " | " eller " - " (typisk sitenavn i titler)
+    return title.split(/\s[\|\-–]\s/)[0].trim();
+  }
+
+  function getDomain(url) {
+    try { return new URL(url).hostname.replace("www.", ""); }
+    catch { return ""; }
+  }
+
+  function getFaviconUrl(url) {
+    try {
+      const origin = new URL(url).origin;
+      return `https://www.google.com/s2/favicons?sz=32&domain=${origin}`;
+    } catch { return ""; }
+  }
+
+  function renderSections(sections) {
+    const main = document.getElementById("main");
+    main.innerHTML = "";
+
+    sections.forEach(section => {
+      const el = document.createElement("div");
+      el.className = "section";
+
+      const items = section.items.map(item => {
+        const domain = getDomain(item.link);
+        const favicon = item.domain
+          ? `https://www.google.com/s2/favicons?sz=32&domain=${item.domain}`
+          : getFaviconUrl(item.link);
+
+        return `
+          <a class="link-card" href="${item.link}" target="_blank" rel="noopener">
+            <div class="link-icon">
+              <img src="${favicon}" alt=""
+                onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'emoji\\'>🔗</span>'">
+            </div>
+            <div class="link-text">
+              <div class="link-label">${cleanTitle(item.title, domain)}</div>
+              <div class="link-domain">${domain}</div>
+            </div>
+          </a>
+        `;
+      }).join("");
+
+      const collapseKey = `rd_collapsed_${section.title}`;
+      const isCollapsed = localStorage.getItem(collapseKey) === "1";
+      if (isCollapsed) el.classList.add("collapsed");
+
+      el.innerHTML = `
+        <div class="section-header">
+          <span class="section-chevron">▼</span>
+          <div class="section-title">${section.title}</div>
+          <div class="section-count">${section.items.length}</div>
+        </div>
+        <div class="link-grid-wrap">
+          <div class="link-grid">${items || '<div class="link-card" style="color:#64748b;border-style:dashed">Tom collection</div>'}</div>
+        </div>
+      `;
+
+      el.querySelector(".section-header").addEventListener("click", () => {
+        const nowCollapsed = el.classList.toggle("collapsed");
+        localStorage.setItem(collapseKey, nowCollapsed ? "1" : "0");
+      });
+
+      main.appendChild(el);
+    });
+
+    // Tidsstempler for opdatering
+    const ts = document.createElement("div");
+    ts.style.cssText = "text-align:center;margin-top:48px;font-size:11px;color:var(--text-muted);opacity:0.5;";
+    ts.textContent = `Sidst opdateret: ${new Date().toLocaleTimeString("da-DK")}`;
+    main.appendChild(ts);
+  }
+
+  // --- Init ---
+  loadLinks();
+</script>
+
+</body>
+</html>

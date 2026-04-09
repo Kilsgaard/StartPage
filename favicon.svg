@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Baggrund -->
+  <rect width="32" height="32" rx="7" fill="#0f1117"/>
+  <!-- 2x2 kort-gitter -->
+  <rect x="3"  y="3"  width="12" height="12" rx="3" fill="#6366f1"/>
+  <rect x="17" y="3"  width="12" height="12" rx="3" fill="#818cf8" opacity="0.75"/>
+  <rect x="3"  y="17" width="12" height="12" rx="3" fill="#818cf8" opacity="0.75"/>
+  <rect x="17" y="17" width="12" height="12" rx="3" fill="#a5b4fc" opacity="0.5"/>
+</svg>
