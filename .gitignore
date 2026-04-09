@@ -1,6 +1,9 @@
 # Claude Code - lokale indstillinger (maskin-specifikke, skal ikke committes)
 .claude/settings.local.json
 
+# Lokale beskrivelser og originale filer - sendes ikke til GitHub
+descriptions/
+
 # OS-filer
 .DS_Store
 Thumbs.db
