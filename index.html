@@ -683,8 +683,11 @@
   applyBackground();
 
   // --- Tile min-width (grid columns) ---
+  // Ryd gammel kolonne-nøgle op (tidligere "4" kolonner ville give 4px bredde)
+  localStorage.removeItem("rd_grid_cols");
+
   function applyGridCols() {
-    const w = localStorage.getItem("rd_grid_cols") || "200";
+    const w = localStorage.getItem("rd_tile_width") || "200";
     document.documentElement.style.setProperty("--tile-min-width", w + "px");
   }
 
@@ -900,7 +903,7 @@
     document.getElementById("sectionGapLabel").textContent = savedGap + "px";
 
     // Grid tile width
-    const savedCols = localStorage.getItem("rd_grid_cols") || "200";
+    const savedCols = localStorage.getItem("rd_tile_width") || "200";
     document.getElementById("gridColsRange").value = savedCols;
     document.getElementById("gridColsLabel").textContent = savedCols + "px";
 
@@ -963,8 +966,8 @@
     localStorage.setItem("rd_section_gap", document.getElementById("sectionGapRange").value);
     applySectionGap();
 
-    // Gem grid columns
-    localStorage.setItem("rd_grid_cols", document.getElementById("gridColsRange").value);
+    // Gem tile width
+    localStorage.setItem("rd_tile_width", document.getElementById("gridColsRange").value);
     applyGridCols();
 
     overlay.classList.remove("visible");
