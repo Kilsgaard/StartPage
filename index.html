@@ -16,7 +16,7 @@
       --text-muted:     #64748b;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --section-gap: 40px;
-      --tile-min-width: 200px;
+      --tile-width: 200px;
       --grid-cols: 5;
       --tile-gap: 10px;
     }
@@ -308,7 +308,7 @@
 
     /* --- Pinned links --- */
     .pinned-section {
-      width: calc(var(--grid-cols) * (var(--tile-min-width) + var(--tile-gap)) - var(--tile-gap));
+      width: calc(var(--grid-cols) * (var(--tile-width) + var(--tile-gap)) - var(--tile-gap));
       max-width: 100%;
       margin: 0 auto 36px;
     }
@@ -345,7 +345,7 @@
 
     /* --- Main content --- */
     main {
-      width: calc(var(--grid-cols) * (var(--tile-min-width) + var(--tile-gap)) - var(--tile-gap));
+      width: calc(var(--grid-cols) * (var(--tile-width) + var(--tile-gap)) - var(--tile-gap));
       max-width: 100%;
       margin: 0 auto;
     }
@@ -405,7 +405,7 @@
 
     .link-grid {
       display: grid;
-      grid-template-columns: repeat(var(--grid-cols), 1fr);
+      grid-template-columns: repeat(var(--grid-cols), var(--tile-width));
       gap: var(--tile-gap);
     }
 
