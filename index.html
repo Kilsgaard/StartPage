@@ -15,6 +15,7 @@
       --text-secondary: #94a3b8;
       --text-muted:     #64748b;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --section-gap: 40px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -341,7 +342,7 @@
     /* --- Main content --- */
     main { max-width: 960px; margin: 0 auto; }
 
-    .section { margin-bottom: 40px; }
+    .section { margin-bottom: var(--section-gap); }
 
     .section-header {
       display: flex;
@@ -545,6 +546,14 @@
       <span>Sekundær tekst (dato, domæne)</span>
     </div>
 
+    <hr class="setup-divider">
+    <label>Afstand mellem sektioner</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <input type="range" id="sectionGapRange" min="8" max="80" step="4" value="40"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="sectionGapLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">40px</span>
+    </div>
+
     <div class="row">
       <button class="btn btn-primary" id="saveBtn">Gem og indlæs</button>
       <button class="btn btn-ghost" id="cancelBtn">Annuller</button>
@@ -664,6 +673,19 @@
   });
 
   applyBackground();
+
+  // --- Section gap ---
+  function applySectionGap() {
+    const gap = localStorage.getItem("rd_section_gap") || "40";
+    document.documentElement.style.setProperty("--section-gap", gap + "px");
+  }
+
+  document.getElementById("sectionGapRange").addEventListener("input", e => {
+    document.getElementById("sectionGapLabel").textContent = e.target.value + "px";
+    document.documentElement.style.setProperty("--section-gap", e.target.value + "px");
+  });
+
+  applySectionGap();
 
   // --- Pinned links ---
   function applyPinned() {
@@ -851,6 +873,11 @@
     document.getElementById("textColorPrimary").value   = localStorage.getItem("rd_text_primary")   || "#e2e8f0";
     document.getElementById("textColorSecondary").value = localStorage.getItem("rd_text_secondary") || "#94a3b8";
 
+    // Section gap
+    const savedGap = localStorage.getItem("rd_section_gap") || "40";
+    document.getElementById("sectionGapRange").value = savedGap;
+    document.getElementById("sectionGapLabel").textContent = savedGap + "px";
+
     overlay.classList.add("visible");
   }
 
@@ -905,6 +932,10 @@
     localStorage.setItem("rd_text_secondary", document.getElementById("textColorSecondary").value);
 
     applyTypography();
+
+    // Gem section gap
+    localStorage.setItem("rd_section_gap", document.getElementById("sectionGapRange").value);
+    applySectionGap();
 
     overlay.classList.remove("visible");
     loadLinks();
