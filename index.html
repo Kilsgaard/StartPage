@@ -17,6 +17,8 @@
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --section-gap: 40px;
       --tile-min-width: 200px;
+      --grid-cols: 5;
+      --tile-gap: 10px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -306,6 +308,7 @@
 
     /* --- Pinned links --- */
     .pinned-section {
+      width: calc(var(--grid-cols) * (var(--tile-min-width) + var(--tile-gap)) - var(--tile-gap));
       max-width: 100%;
       margin: 0 auto 36px;
     }
@@ -341,7 +344,11 @@
     body.has-bg-image .pinned-card:hover { background: rgba(30,38,58,0.85); }
 
     /* --- Main content --- */
-    main { max-width: 100%; margin: 0 auto; }
+    main {
+      width: calc(var(--grid-cols) * (var(--tile-min-width) + var(--tile-gap)) - var(--tile-gap));
+      max-width: 100%;
+      margin: 0 auto;
+    }
 
     .section { margin-bottom: var(--section-gap); }
 
@@ -397,15 +404,12 @@
     }
 
     .link-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(var(--grid-cols), 1fr);
+      gap: var(--tile-gap);
     }
 
     .link-card {
-      flex: 0 0 var(--tile-actual-width, 200px);
-      max-width: var(--tile-actual-width, 200px);
       background: #1e2533;
       border: 1px solid #2d3748;
       border-radius: 10px;
@@ -558,11 +562,11 @@
       <span id="sectionGapLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">40px</span>
     </div>
 
-    <label>Tile størrelse (bestemmer antal kolonner)</label>
+    <label>Antal kolonner i bredden</label>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <input type="range" id="gridColsRange" min="100" max="500" step="10" value="200"
+      <input type="range" id="gridColsRange" min="2" max="10" step="1" value="5"
         style="flex:1;accent-color:#6366f1;cursor:pointer">
-      <span id="gridColsLabel" style="font-size:13px;color:#94a3b8;min-width:46px;text-align:right">200px</span>
+      <span id="gridColsLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">5</span>
     </div>
 
     <div class="row">
@@ -685,33 +689,16 @@
 
   applyBackground();
 
-  // --- Tile width beregning ---
-  // Ryd gammel kolonne-nøgle op (tidligere "4" kolonner ville give 4px bredde)
-  localStorage.removeItem("rd_grid_cols");
-
-  function calcTileWidth() {
-    const main = document.getElementById("main");
-    if (!main) return;
-    const minW = parseInt(localStorage.getItem("rd_tile_width") || "200");
-    const gap = 10;
-    const containerW = main.offsetWidth;
-    const cols = Math.max(1, Math.floor((containerW + gap) / (minW + gap)));
-    const tileW = (containerW - (cols - 1) * gap) / cols;
-    document.documentElement.style.setProperty("--tile-actual-width", tileW + "px");
-    document.documentElement.style.setProperty("--tile-min-width", minW + "px");
-  }
-
+  // --- Antal kolonner ---
   function applyGridCols() {
-    calcTileWidth();
+    const cols = localStorage.getItem("rd_grid_cols") || "5";
+    document.documentElement.style.setProperty("--grid-cols", cols);
   }
 
   document.getElementById("gridColsRange").addEventListener("input", e => {
-    document.getElementById("gridColsLabel").textContent = e.target.value + "px";
-    localStorage.setItem("rd_tile_width", e.target.value);
-    calcTileWidth();
+    document.getElementById("gridColsLabel").textContent = e.target.value;
+    document.documentElement.style.setProperty("--grid-cols", e.target.value);
   });
-
-  window.addEventListener("resize", calcTileWidth);
 
   applyGridCols();
 
@@ -919,10 +906,10 @@
     document.getElementById("sectionGapRange").value = savedGap;
     document.getElementById("sectionGapLabel").textContent = savedGap + "px";
 
-    // Grid tile width
-    const savedCols = localStorage.getItem("rd_tile_width") || "200";
+    // Kolonner
+    const savedCols = localStorage.getItem("rd_grid_cols") || "5";
     document.getElementById("gridColsRange").value = savedCols;
-    document.getElementById("gridColsLabel").textContent = savedCols + "px";
+    document.getElementById("gridColsLabel").textContent = savedCols;
 
     overlay.classList.add("visible");
   }
@@ -983,6 +970,7 @@
     localStorage.setItem("rd_section_gap", document.getElementById("sectionGapRange").value);
     applySectionGap();
 
+    localStorage.setItem("rd_grid_cols", document.getElementById("gridColsRange").value);
     applyGridCols();
 
     overlay.classList.remove("visible");
@@ -1044,7 +1032,6 @@
       );
 
       renderSections(sectionsData);
-      calcTileWidth();
 
     } catch (err) {
       console.error(err);
