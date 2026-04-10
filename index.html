@@ -397,12 +397,15 @@
     }
 
     .link-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--tile-min-width), 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
     }
 
     .link-card {
+      flex: 0 0 var(--tile-actual-width, 200px);
+      max-width: var(--tile-actual-width, 200px);
       background: #1e2533;
       border: 1px solid #2d3748;
       border-radius: 10px;
@@ -682,19 +685,33 @@
 
   applyBackground();
 
-  // --- Tile min-width (grid columns) ---
+  // --- Tile width beregning ---
   // Ryd gammel kolonne-nøgle op (tidligere "4" kolonner ville give 4px bredde)
   localStorage.removeItem("rd_grid_cols");
 
+  function calcTileWidth() {
+    const main = document.getElementById("main");
+    if (!main) return;
+    const minW = parseInt(localStorage.getItem("rd_tile_width") || "200");
+    const gap = 10;
+    const containerW = main.offsetWidth;
+    const cols = Math.max(1, Math.floor((containerW + gap) / (minW + gap)));
+    const tileW = (containerW - (cols - 1) * gap) / cols;
+    document.documentElement.style.setProperty("--tile-actual-width", tileW + "px");
+    document.documentElement.style.setProperty("--tile-min-width", minW + "px");
+  }
+
   function applyGridCols() {
-    const w = localStorage.getItem("rd_tile_width") || "200";
-    document.documentElement.style.setProperty("--tile-min-width", w + "px");
+    calcTileWidth();
   }
 
   document.getElementById("gridColsRange").addEventListener("input", e => {
     document.getElementById("gridColsLabel").textContent = e.target.value + "px";
-    document.documentElement.style.setProperty("--tile-min-width", e.target.value + "px");
+    localStorage.setItem("rd_tile_width", e.target.value);
+    calcTileWidth();
   });
+
+  window.addEventListener("resize", calcTileWidth);
 
   applyGridCols();
 
@@ -966,8 +983,6 @@
     localStorage.setItem("rd_section_gap", document.getElementById("sectionGapRange").value);
     applySectionGap();
 
-    // Gem tile width
-    localStorage.setItem("rd_tile_width", document.getElementById("gridColsRange").value);
     applyGridCols();
 
     overlay.classList.remove("visible");
@@ -1029,6 +1044,7 @@
       );
 
       renderSections(sectionsData);
+      calcTileWidth();
 
     } catch (err) {
       console.error(err);
