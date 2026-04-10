@@ -397,12 +397,15 @@
     }
 
     .link-grid {
-      display: grid;
-      grid-template-columns: repeat(var(--grid-cols), 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
     }
 
     .link-card {
+      flex: 0 0 calc(100% / var(--grid-cols) - 10px);
+      max-width: calc(100% / var(--grid-cols) - 10px);
       background: #1e2533;
       border: 1px solid #2d3748;
       border-radius: 10px;
