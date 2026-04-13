@@ -15,6 +15,10 @@
       --text-secondary: #94a3b8;
       --text-muted:     #64748b;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --section-gap: 40px;
+      --tile-width: 200px;
+      --grid-cols: 5;
+      --tile-gap: 10px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,7 +28,7 @@
       background: #0f1117;
       color: var(--text-primary);
       min-height: 100vh;
-      padding: 48px 24px;
+      padding: 48px clamp(24px, 5vw, 120px);
     }
 
     /* --- Header --- */
@@ -304,7 +308,8 @@
 
     /* --- Pinned links --- */
     .pinned-section {
-      max-width: 960px;
+      width: calc(var(--grid-cols) * (var(--tile-width) + var(--tile-gap)) - var(--tile-gap));
+      max-width: 100%;
       margin: 0 auto 36px;
     }
     .pinned-section[hidden] { display: none; }
@@ -339,9 +344,13 @@
     body.has-bg-image .pinned-card:hover { background: rgba(30,38,58,0.85); }
 
     /* --- Main content --- */
-    main { max-width: 960px; margin: 0 auto; }
+    main {
+      width: calc(var(--grid-cols) * (var(--tile-width) + var(--tile-gap)) - var(--tile-gap));
+      max-width: 100%;
+      margin: 0 auto;
+    }
 
-    .section { margin-bottom: 40px; }
+    .section { margin-bottom: var(--section-gap); }
 
     .section-header {
       display: flex;
@@ -396,8 +405,8 @@
 
     .link-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(var(--grid-cols), var(--tile-width));
+      gap: var(--tile-gap);
     }
 
     .link-card {
@@ -545,6 +554,28 @@
       <span>Sekundær tekst (dato, domæne)</span>
     </div>
 
+    <hr class="setup-divider">
+    <label>Afstand mellem sektioner</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <input type="range" id="sectionGapRange" min="8" max="80" step="4" value="40"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="sectionGapLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">40px</span>
+    </div>
+
+    <label>Antal kolonner i bredden</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <input type="range" id="gridColsRange" min="2" max="10" step="1" value="5"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="gridColsLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">5</span>
+    </div>
+
+    <label>Tile størrelse</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <input type="range" id="tileWidthRange" min="140" max="400" step="10" value="200"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="tileWidthLabel" style="font-size:13px;color:#94a3b8;min-width:46px;text-align:right">200px</span>
+    </div>
+
     <div class="row">
       <button class="btn btn-primary" id="saveBtn">Gem og indlæs</button>
       <button class="btn btn-ghost" id="cancelBtn">Annuller</button>
@@ -664,6 +695,45 @@
   });
 
   applyBackground();
+
+  // --- Antal kolonner ---
+  function applyGridCols() {
+    const cols = localStorage.getItem("rd_grid_cols") || "5";
+    document.documentElement.style.setProperty("--grid-cols", cols);
+  }
+
+  document.getElementById("gridColsRange").addEventListener("input", e => {
+    document.getElementById("gridColsLabel").textContent = e.target.value;
+    document.documentElement.style.setProperty("--grid-cols", e.target.value);
+  });
+
+  applyGridCols();
+
+  // --- Tile størrelse ---
+  function applyTileWidth() {
+    const w = localStorage.getItem("rd_tile_width") || "200";
+    document.documentElement.style.setProperty("--tile-width", w + "px");
+  }
+
+  document.getElementById("tileWidthRange").addEventListener("input", e => {
+    document.getElementById("tileWidthLabel").textContent = e.target.value + "px";
+    document.documentElement.style.setProperty("--tile-width", e.target.value + "px");
+  });
+
+  applyTileWidth();
+
+  // --- Section gap ---
+  function applySectionGap() {
+    const gap = localStorage.getItem("rd_section_gap") || "40";
+    document.documentElement.style.setProperty("--section-gap", gap + "px");
+  }
+
+  document.getElementById("sectionGapRange").addEventListener("input", e => {
+    document.getElementById("sectionGapLabel").textContent = e.target.value + "px";
+    document.documentElement.style.setProperty("--section-gap", e.target.value + "px");
+  });
+
+  applySectionGap();
 
   // --- Pinned links ---
   function applyPinned() {
@@ -851,6 +921,21 @@
     document.getElementById("textColorPrimary").value   = localStorage.getItem("rd_text_primary")   || "#e2e8f0";
     document.getElementById("textColorSecondary").value = localStorage.getItem("rd_text_secondary") || "#94a3b8";
 
+    // Section gap
+    const savedGap = localStorage.getItem("rd_section_gap") || "40";
+    document.getElementById("sectionGapRange").value = savedGap;
+    document.getElementById("sectionGapLabel").textContent = savedGap + "px";
+
+    // Kolonner
+    const savedCols = localStorage.getItem("rd_grid_cols") || "5";
+    document.getElementById("gridColsRange").value = savedCols;
+    document.getElementById("gridColsLabel").textContent = savedCols;
+
+    // Tile størrelse
+    const savedTileW = localStorage.getItem("rd_tile_width") || "200";
+    document.getElementById("tileWidthRange").value = savedTileW;
+    document.getElementById("tileWidthLabel").textContent = savedTileW + "px";
+
     overlay.classList.add("visible");
   }
 
@@ -906,6 +991,16 @@
 
     applyTypography();
 
+    // Gem section gap
+    localStorage.setItem("rd_section_gap", document.getElementById("sectionGapRange").value);
+    applySectionGap();
+
+    localStorage.setItem("rd_grid_cols", document.getElementById("gridColsRange").value);
+    applyGridCols();
+
+    localStorage.setItem("rd_tile_width", document.getElementById("tileWidthRange").value);
+    applyTileWidth();
+
     overlay.classList.remove("visible");
     loadLinks();
   });
@@ -948,18 +1043,20 @@
         return;
       }
 
-      // Find alle child collections under StartPage
-      const children = allCollections.filter(c => c.parent && c.parent.$id === parent._id);
+      // Find alle child collections under StartPage — sorter efter Raindrop's sort-felt
+      const children = allCollections
+        .filter(c => c.parent && c.parent.$id === parent._id)
+        .sort((a, b) => a.sort - b.sort);
 
       if (children.length === 0) {
         main.innerHTML = `<div class="status error">Ingen under-collections fundet i "${parentName}".</div>`;
         return;
       }
 
-      // Hent raindrops for hvert barn parallelt
+      // Hent raindrops for hvert barn parallelt — sort=-sort matcher drag-and-drop rækkefølge i Raindrop
       const sectionsData = await Promise.all(
         children.map(async col => {
-          const data = await rdFetch(`/raindrops/${col._id}?perpage=250`);
+          const data = await rdFetch(`/raindrops/${col._id}?perpage=250&sort=-sort`);
           return { title: col.title, items: data.items || [] };
         })
       );
