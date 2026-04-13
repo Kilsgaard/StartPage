@@ -549,91 +549,152 @@
       background: #1e2533;
       font-family: monospace;
     }
+
+    /* --- Help button --- */
+    .help-btn {
+      position: fixed;
+      top: 16px;
+      right: 170px;
+      background: #1e2533;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .help-btn:hover { border-color: #6366f1; color: var(--text-primary); }
+
+    /* --- Shortcuts overlay --- */
+    .shortcuts-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .shortcuts-overlay.visible { display: flex; }
+    .shortcuts-box {
+      background: #1e2533;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 340px;
+    }
+    .shortcuts-box h2 { font-size: 16px; margin-bottom: 20px; }
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid #2d3748;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .shortcut-row:last-child { border-bottom: none; }
+    .shortcut-keys { display: flex; gap: 4px; }
+
+    /* --- Mest besøgte badge --- */
+    .visit-count {
+      font-size: 10px;
+      color: var(--text-muted);
+      background: #2d3748;
+      border-radius: 10px;
+      padding: 1px 6px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
 
 <!-- Refresh button -->
-<button class="refresh-btn" id="refreshBtn" title="Opdater links">↻</button>
+<button class="refresh-btn" id="refreshBtn" data-i18n-title="refreshTitle" title="Opdater links">↻</button>
+
+<!-- Help button -->
+<button class="help-btn" id="helpBtn" data-i18n-title="helpTitle" title="Tastaturgenveje">?</button>
 
 <!-- Settings button -->
-<button class="settings-btn" id="settingsBtn">Indstillinger</button>
+<button class="settings-btn" id="settingsBtn" data-i18n="settings">Indstillinger</button>
 
 <!-- Setup overlay -->
 <div class="overlay" id="overlay">
   <div class="setup-box">
-    <h2>Indstillinger</h2>
-    <p>
+    <h2 data-i18n="settingsTitle">Indstillinger</h2>
+    <p data-i18n-html="settingsDesc">
       Hent din test-token fra<br>
       <strong>app.raindrop.io → Settings → Integrations → Create test token</strong><br><br>
       Tokenen gemmes kun i din browser (localStorage).
     </p>
-    <label>Dit navn (til velkomsthilsen)</label>
+    <label data-i18n="labelName">Dit navn (til velkomsthilsen)</label>
     <input type="text" id="greetingNameInput" placeholder="fx Gki">
 
-    <label>API Token</label>
+    <label data-i18n="labelToken">API Token</label>
     <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-    <label>StartPage collection navn</label>
+    <label data-i18n="labelCollection">StartPage collection navn</label>
     <input type="text" id="collectionInput" placeholder="StartPage">
 
     <hr class="setup-divider">
-    <label>Genvej 1</label>
+    <label data-i18n="labelPinned1">Genvej 1</label>
     <input type="text" id="pinned1Url"   placeholder="https://intranet.firma.dk">
     <input type="text" id="pinned1Name"  placeholder="Navn (fx KMC Intranet)">
     <input type="text" id="pinned1Emoji" placeholder="Emoji (fx 🏢)" style="width:160px;margin-bottom:16px">
-    <label>Genvej 2</label>
+    <label data-i18n="labelPinned2">Genvej 2</label>
     <input type="text" id="pinned2Url"   placeholder="https://...">
     <input type="text" id="pinned2Name"  placeholder="Navn">
     <input type="text" id="pinned2Emoji" placeholder="Emoji (fx 🔗)" style="width:160px;margin-bottom:16px">
 
     <hr class="setup-divider">
-    <label>Baggrundsfarve</label>
+    <label data-i18n="labelBgColor">Baggrundsfarve</label>
     <div class="swatch-grid" id="swatchGrid"></div>
     <div class="color-row">
       <input type="color" id="customColor" title="Vælg egen farve">
-      <span>Eller vælg en brugerdefineret farve</span>
+      <span data-i18n="customColor">Eller vælg en brugerdefineret farve</span>
     </div>
 
-    <label>Baggrundsbillede</label>
+    <label data-i18n="labelBgImage">Baggrundsbillede</label>
     <input type="text" id="bgImageInput" placeholder="https://... eller vælg en lokal fil nedenfor" style="margin-bottom:8px">
     <div class="color-row" style="margin-bottom:0">
-      <label for="bgFileInput" class="btn btn-ghost" style="cursor:pointer;padding:8px 14px;font-size:12px;margin-bottom:0">
+      <label for="bgFileInput" class="btn btn-ghost" style="cursor:pointer;padding:8px 14px;font-size:12px;margin-bottom:0" data-i18n="chooseFile">
         Vælg fil...
       </label>
-      <span id="bgFileName" style="font-size:12px;color:#64748b">Ingen fil valgt</span>
+      <span id="bgFileName" style="font-size:12px;color:#64748b" data-i18n="noFileChosen">Ingen fil valgt</span>
       <input type="file" id="bgFileInput" accept="image/*" style="display:none">
     </div>
 
     <hr class="setup-divider">
-    <label>Skrifttype</label>
+    <label data-i18n="labelFont">Skrifttype</label>
     <div class="font-grid" id="fontGrid"></div>
 
-    <label>Tekstfarve</label>
+    <label data-i18n="labelTextColor">Tekstfarve</label>
     <div class="color-row" style="margin-bottom:4px">
       <input type="color" id="textColorPrimary" title="Primær tekst" value="#e2e8f0">
-      <span>Primær tekst (overskrifter, links)</span>
+      <span data-i18n="labelTextPrimary">Primær tekst (overskrifter, links)</span>
     </div>
     <div class="color-row" style="margin-bottom:16px">
       <input type="color" id="textColorSecondary" title="Sekundær tekst" value="#94a3b8">
-      <span>Sekundær tekst (dato, domæne)</span>
+      <span data-i18n="labelTextSecondary">Sekundær tekst (dato, domæne)</span>
     </div>
 
     <hr class="setup-divider">
-    <label>Afstand mellem sektioner</label>
+    <label data-i18n="labelSectionGap">Afstand mellem sektioner</label>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
       <input type="range" id="sectionGapRange" min="8" max="80" step="4" value="40"
         style="flex:1;accent-color:#6366f1;cursor:pointer">
       <span id="sectionGapLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">40px</span>
     </div>
 
-    <label>Antal kolonner i bredden</label>
+    <label data-i18n="labelGridCols">Antal kolonner i bredden</label>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
       <input type="range" id="gridColsRange" min="2" max="10" step="1" value="5"
         style="flex:1;accent-color:#6366f1;cursor:pointer">
       <span id="gridColsLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">5</span>
     </div>
 
-    <label>Tile størrelse</label>
+    <label data-i18n="labelTileSize">Tile størrelse</label>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
       <input type="range" id="tileWidthRange" min="140" max="400" step="10" value="200"
         style="flex:1;accent-color:#6366f1;cursor:pointer">
@@ -641,19 +702,63 @@
     </div>
 
     <hr class="setup-divider">
-    <label>Skjulte sektioner</label>
+    <label data-i18n="labelHiddenSections">Skjulte sektioner</label>
     <div id="hiddenSectionsList" style="margin-bottom:16px;font-size:13px;color:var(--text-muted)">
       Ingen skjulte sektioner
     </div>
 
+    <label data-i18n="labelMostVisited">Mest besøgte</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <input type="range" id="mostVisitedCountRange" min="3" max="12" step="1" value="6"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="mostVisitedCountLabel" style="font-size:13px;color:#94a3b8;min-width:24px;text-align:right">6</span>
+    </div>
+    <div style="margin-bottom:16px">
+      <button class="btn btn-ghost" id="resetClicksBtn" style="font-size:12px;padding:7px 14px" data-i18n="resetClicks">Nulstil besøgsstatistik</button>
+    </div>
+
+    <hr class="setup-divider">
+    <label data-i18n="labelLanguage">Sprog</label>
+    <div class="font-grid" style="margin-bottom:16px" id="langGrid">
+      <button class="font-chip lang-chip selected" data-lang="da">Dansk</button>
+      <button class="font-chip lang-chip" data-lang="en">English</button>
+    </div>
+
     <div class="row">
-      <button class="btn btn-primary" id="saveBtn">Gem og indlæs</button>
-      <button class="btn btn-ghost" id="cancelBtn">Annuller</button>
+      <button class="btn btn-primary" id="saveBtn" data-i18n="save">Gem og indlæs</button>
+      <button class="btn btn-ghost" id="cancelBtn" data-i18n="cancel">Annuller</button>
     </div>
   </div>
 </div>
 
 <div id="bgOverlay"></div>
+
+<!-- Shortcuts overlay -->
+<div class="shortcuts-overlay" id="shortcutsOverlay">
+  <div class="shortcuts-box">
+    <h2 data-i18n="shortcutsTitle">Tastaturgenveje</h2>
+    <div class="shortcut-row">
+      <span data-i18n="shortcutSearch">Åbn søgefelt</span>
+      <div class="shortcut-keys"><span class="kbd">/</span></div>
+    </div>
+    <div class="shortcut-row">
+      <span data-i18n="shortcutFilter">Filtrer bookmarks</span>
+      <div class="shortcut-keys"><span class="kbd">f</span></div>
+    </div>
+    <div class="shortcut-row">
+      <span data-i18n="shortcutClose">Luk / ryd</span>
+      <div class="shortcut-keys"><span class="kbd">Esc</span></div>
+    </div>
+    <div class="shortcut-row">
+      <span data-i18n="shortcutEngine">Skift søgemaskine</span>
+      <div class="shortcut-keys"><span class="kbd">1</span>–<span class="kbd">9</span></div>
+    </div>
+    <div class="shortcut-row">
+      <span data-i18n="shortcutHelp">Genveje</span>
+      <div class="shortcut-keys"><span class="kbd">?</span></div>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="clock" id="clock">00:00</div>
@@ -661,14 +766,14 @@
   <div class="date" id="date"></div>
   <div class="search-bar">
     <div class="search-input-row">
-      <input type="text" placeholder="Søg... ( / )" id="search">
+      <input type="text" placeholder="Søg... ( / )" id="search" data-i18n-placeholder="searchPlaceholder">
     </div>
     <div class="engine-toggle" id="engineToggle"></div>
   </div>
 </header>
 
 <div id="filterBar">
-  <input type="text" id="filterInput" placeholder="Filtrer bookmarks... (f)">
+  <input type="text" id="filterInput" placeholder="Filtrer bookmarks... (f)" data-i18n-placeholder="filterPlaceholder">
 </div>
 
 <div class="pinned-section" id="pinnedSection" hidden>
@@ -699,11 +804,107 @@
 <script>
   const API = "https://api.raindrop.io/rest/v1";
 
+  // --- Internationalization ---
+  const strings = {
+    da: {
+      settings: "Indstillinger", save: "Gem og indlæs", cancel: "Annuller",
+      restore: "Gendan", resetClicks: "Nulstil besøgsstatistik",
+      searchPlaceholder: "Søg... ( / )", filterPlaceholder: "Filtrer bookmarks... (f)",
+      settingsTitle: "Indstillinger",
+      settingsDesc: "Hent din test-token fra<br><strong>app.raindrop.io → Settings → Integrations → Create test token</strong><br><br>Tokenen gemmes kun i din browser (localStorage).",
+      labelName: "Dit navn (til velkomsthilsen)", labelToken: "API Token",
+      labelCollection: "StartPage collection navn",
+      labelPinned1: "Genvej 1", labelPinned2: "Genvej 2",
+      labelBgColor: "Baggrundsfarve", labelBgImage: "Baggrundsbillede",
+      labelFont: "Skrifttype", labelTextColor: "Tekstfarve",
+      labelTextPrimary: "Primær tekst (overskrifter, links)",
+      labelTextSecondary: "Sekundær tekst (dato, domæne)",
+      labelSectionGap: "Afstand mellem sektioner",
+      labelGridCols: "Antal kolonner i bredden", labelTileSize: "Tile størrelse",
+      labelHiddenSections: "Skjulte sektioner", labelMostVisited: "Mest besøgte",
+      labelMostVisitedCount: "Antal links i Mest besøgte",
+      labelLanguage: "Sprog",
+      noHiddenSections: "Ingen skjulte sektioner",
+      chooseFile: "Vælg fil...", noFileChosen: "Ingen fil valgt",
+      customColor: "Eller vælg en brugerdefineret farve",
+      loading: "Henter collections...",
+      noToken: "Ingen token konfigureret — klik på <strong>Indstillinger</strong> for at komme i gang.",
+      toastHidden: t => `"${t}" skjult`, toastCopied: e => `Kopieret — tryk Ctrl+V i ${e}`,
+      toastResetClicks: "Besøgsstatistik nulstillet", toastUndo: "Fortryd",
+      mostVisited: "Mest besøgte",
+      lastUpdated: t => `Sidst opdateret: ${t}`, emptyCollection: "Tom collection",
+      greetingNight: "God nat", greetingMorning: "God morgen",
+      greetingAfternoon: "God eftermiddag", greetingEvening: "God aften",
+      shortcutsTitle: "Tastaturgenveje", shortcutSearch: "Åbn søgefelt",
+      shortcutFilter: "Filtrer bookmarks", shortcutClose: "Luk / ryd",
+      shortcutEngine: "Skift søgemaskine", shortcutHelp: "Genveje",
+      dateLocale: "da-DK",
+      collectionNotFound: n => `Collection "${n}" ikke fundet. Tjek indstillinger.`,
+      noChildCollections: n => `Ingen under-collections fundet i "${n}".`,
+      apiError: m => `Fejl: ${m}`, alertNoToken: "Indtast venligst en token.",
+      refreshTitle: "Opdater links", helpTitle: "Tastaturgenveje",
+    },
+    en: {
+      settings: "Settings", save: "Save & reload", cancel: "Cancel",
+      restore: "Restore", resetClicks: "Reset visit statistics",
+      searchPlaceholder: "Search... ( / )", filterPlaceholder: "Filter bookmarks... (f)",
+      settingsTitle: "Settings",
+      settingsDesc: "Get your test token from<br><strong>app.raindrop.io → Settings → Integrations → Create test token</strong><br><br>The token is only stored in your browser (localStorage).",
+      labelName: "Your name (for greeting)", labelToken: "API Token",
+      labelCollection: "StartPage collection name",
+      labelPinned1: "Shortcut 1", labelPinned2: "Shortcut 2",
+      labelBgColor: "Background color", labelBgImage: "Background image",
+      labelFont: "Font", labelTextColor: "Text color",
+      labelTextPrimary: "Primary text (headings, links)",
+      labelTextSecondary: "Secondary text (date, domain)",
+      labelSectionGap: "Section spacing",
+      labelGridCols: "Number of columns", labelTileSize: "Tile size",
+      labelHiddenSections: "Hidden sections", labelMostVisited: "Most visited",
+      labelMostVisitedCount: "Number of links in Most visited",
+      labelLanguage: "Language",
+      noHiddenSections: "No hidden sections",
+      chooseFile: "Choose file...", noFileChosen: "No file chosen",
+      customColor: "Or pick a custom color",
+      loading: "Fetching collections...",
+      noToken: "No token configured — click <strong>Settings</strong> to get started.",
+      toastHidden: t => `"${t}" hidden`, toastCopied: e => `Copied — paste with Ctrl+V in ${e}`,
+      toastResetClicks: "Visit statistics reset", toastUndo: "Undo",
+      mostVisited: "Most visited",
+      lastUpdated: t => `Last updated: ${t}`, emptyCollection: "Empty collection",
+      greetingNight: "Good night", greetingMorning: "Good morning",
+      greetingAfternoon: "Good afternoon", greetingEvening: "Good evening",
+      shortcutsTitle: "Keyboard shortcuts", shortcutSearch: "Open search",
+      shortcutFilter: "Filter bookmarks", shortcutClose: "Close / clear",
+      shortcutEngine: "Switch search engine", shortcutHelp: "Shortcuts",
+      dateLocale: "en-GB",
+      collectionNotFound: n => `Collection "${n}" not found. Check settings.`,
+      noChildCollections: n => `No sub-collections found in "${n}".`,
+      apiError: m => `Error: ${m}`, alertNoToken: "Please enter a token.",
+      refreshTitle: "Refresh links", helpTitle: "Keyboard shortcuts",
+    }
+  };
+
+  let currentLang = localStorage.getItem("rd_lang") || "da";
+  function t(key, arg) {
+    const val = strings[currentLang]?.[key] ?? strings.da[key] ?? key;
+    return typeof val === "function" ? val(arg) : val;
+  }
+  function applyLanguage() {
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    // Language chips
+    document.querySelectorAll(".lang-chip").forEach(chip => {
+      chip.classList.toggle("selected", chip.dataset.lang === currentLang);
+    });
+  }
+
   // --- Greeting ---
   function updateGreeting() {
     const h = new Date().getHours();
     const name = localStorage.getItem("rd_greeting_name") || "";
-    const text = h < 5 ? "God nat" : h < 12 ? "God morgen" : h < 18 ? "God eftermiddag" : h < 23 ? "God aften" : "God nat";
+    const text = h < 5 ? t("greetingNight") : h < 12 ? t("greetingMorning") : h < 18 ? t("greetingAfternoon") : h < 23 ? t("greetingEvening") : t("greetingNight");
     document.getElementById("greeting").textContent = text + (name ? `, ${name}` : "");
   }
   updateGreeting();
@@ -751,10 +952,14 @@
       e.preventDefault();
       document.getElementById("filterInput").focus();
     }
+    if (e.key === "?" && !inInput) {
+      document.getElementById("shortcutsOverlay").classList.toggle("visible");
+    }
     if (e.key === "Escape") {
       document.activeElement.blur();
       const fi = document.getElementById("filterInput");
       if (fi.value) { fi.value = ""; fi.dispatchEvent(new Event("input")); }
+      document.getElementById("shortcutsOverlay").classList.remove("visible");
     }
     // 1-9: skift søgemaskine
     if (!inInput && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -769,6 +974,29 @@
       }
     }
   });
+
+  // --- Reset click stats ---
+  document.getElementById("resetClicksBtn").addEventListener("click", () => {
+    localStorage.removeItem("rd_click_counts");
+    localStorage.removeItem("rd_click_data");
+    showToast(t("toastResetClicks"));
+  });
+
+  // --- Language selector ---
+  document.getElementById("langGrid").addEventListener("click", e => {
+    const chip = e.target.closest(".lang-chip");
+    if (!chip) return;
+    currentLang = chip.dataset.lang;
+    localStorage.setItem("rd_lang", currentLang);
+    applyLanguage();
+    updateGreeting();
+    updateClock();
+  });
+
+  // --- Shortcuts overlay ---
+  const shortcutsOverlay = document.getElementById("shortcutsOverlay");
+  document.getElementById("helpBtn").addEventListener("click", () => shortcutsOverlay.classList.toggle("visible"));
+  shortcutsOverlay.addEventListener("click", e => { if (e.target === shortcutsOverlay) shortcutsOverlay.classList.remove("visible"); });
 
   // --- Storage helpers ---
   const getToken = () => localStorage.getItem("rd_token") || "";
@@ -868,6 +1096,10 @@
 
   applyTileWidth();
 
+  document.getElementById("mostVisitedCountRange").addEventListener("input", e => {
+    document.getElementById("mostVisitedCountLabel").textContent = e.target.value;
+  });
+
   // --- Section gap ---
   function applySectionGap() {
     const gap = localStorage.getItem("rd_section_gap") || "40";
@@ -966,9 +1198,9 @@
   function updateClock() {
     const now = new Date();
     document.getElementById("clock").textContent =
-      now.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" });
+      now.toLocaleTimeString(t("dateLocale"), { hour: "2-digit", minute: "2-digit" });
     document.getElementById("date").textContent =
-      now.toLocaleDateString("da-DK", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      now.toLocaleDateString(t("dateLocale"), { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   }
   updateClock();
   setInterval(updateClock, 1000);
@@ -1072,7 +1304,7 @@
   async function doSearch(eng, q) {
     if (eng.clipboard) {
       await navigator.clipboard.writeText(q);
-      showToast(`Kopieret — tryk Ctrl+V i ${eng.label}`);
+      showToast(t("toastCopied", eng.label));
     }
     window.open(eng.url(q), "_blank");
   }
@@ -1109,14 +1341,14 @@
     const hidden = getHiddenSections();
     const listEl = document.getElementById("hiddenSectionsList");
     if (hidden.length === 0) {
-      listEl.innerHTML = '<span style="color:var(--text-muted)">Ingen skjulte sektioner</span>';
+      listEl.innerHTML = `<span style="color:var(--text-muted)">${t("noHiddenSections")}</span>`;
     } else {
       listEl.innerHTML = hidden.map(t => `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #2d3748">
           <span>${t}</span>
           <button onclick="unhideSection('${t.replace(/'/g,"\\'")}');this.closest('.setup-box').dispatchEvent(new Event('refresh-hidden'))"
             style="background:none;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:2px 10px;cursor:pointer;font-size:12px">
-            Gendan
+            ${t("restore")}
           </button>
         </div>`).join("");
     }
@@ -1155,6 +1387,11 @@
     document.getElementById("tileWidthRange").value = savedTileW;
     document.getElementById("tileWidthLabel").textContent = savedTileW + "px";
 
+    // Mest besøgte antal
+    const savedMVC = localStorage.getItem("rd_most_visited_count") || "6";
+    document.getElementById("mostVisitedCountRange").value = savedMVC;
+    document.getElementById("mostVisitedCountLabel").textContent = savedMVC;
+
     overlay.classList.add("visible");
   }
 
@@ -1179,7 +1416,7 @@
 
     const token = document.getElementById("tokenInput").value.trim();
     const parent = document.getElementById("collectionInput").value.trim() || "StartPage";
-    if (!token) return alert("Indtast venligst en token.");
+    if (!token) return alert(t("alertNoToken"));
     setToken(token);
     setParentName(parent);
 
@@ -1226,9 +1463,91 @@
     localStorage.setItem("rd_tile_width", document.getElementById("tileWidthRange").value);
     applyTileWidth();
 
+    localStorage.setItem("rd_most_visited_count", document.getElementById("mostVisitedCountRange").value);
+
     overlay.classList.remove("visible");
     loadLinks();
   });
+
+  // --- Click tracking ---
+  function getClickCounts() {
+    try { return JSON.parse(localStorage.getItem("rd_click_counts") || "{}"); }
+    catch { return {}; }
+  }
+  function getClickData() {
+    try { return JSON.parse(localStorage.getItem("rd_click_data") || "{}"); }
+    catch { return {}; }
+  }
+  function trackClick(url, title, domain, favicon) {
+    const counts = getClickCounts();
+    counts[url] = (counts[url] || 0) + 1;
+    localStorage.setItem("rd_click_counts", JSON.stringify(counts));
+    const data = getClickData();
+    data[url] = { title, domain, favicon };
+    localStorage.setItem("rd_click_data", JSON.stringify(data));
+  }
+
+  // Event delegation — track all link-card clicks in #main
+  document.getElementById("main").addEventListener("click", e => {
+    const card = e.target.closest(".link-card");
+    if (!card || !card.href) return;
+    const title = card.querySelector(".link-label")?.textContent || "";
+    const domain = card.querySelector(".link-domain")?.textContent || "";
+    const img = card.querySelector(".link-icon img");
+    const favicon = img ? img.src : "";
+    trackClick(card.href, title, domain, favicon);
+  });
+
+  function renderMostVisited() {
+    const counts = getClickCounts();
+    const data = getClickData();
+    const maxCount = parseInt(localStorage.getItem("rd_most_visited_count") || "6");
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, maxCount);
+    if (entries.length === 0) return null;
+
+    const el = document.createElement("div");
+    el.className = "section";
+
+    const items = entries.map(([url, count]) => {
+      const d = data[url] || {};
+      const domain = d.domain || "";
+      const favicon = d.favicon || "";
+      const title = d.title || domain || url;
+      return `
+        <a class="link-card" href="${url}" target="_blank" rel="noopener">
+          <div class="link-icon">
+            <img src="${favicon}" alt=""
+              onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'emoji\\'>🔗</span>'">
+          </div>
+          <div class="link-text">
+            <div class="link-label">${title}</div>
+            <div class="link-domain">${domain}</div>
+          </div>
+          <span class="visit-count">${count}</span>
+        </a>`;
+    }).join("");
+
+    const collapseKey = "rd_collapsed_mest_besogte";
+    const isCollapsed = localStorage.getItem(collapseKey) === "1";
+    if (isCollapsed) el.classList.add("collapsed");
+
+    el.innerHTML = `
+      <div class="section-header">
+        <span class="section-chevron">▼</span>
+        <div class="section-title">${t("mostVisited")}</div>
+        <div class="section-count">${entries.length}</div>
+      </div>
+      <div class="link-grid-wrap">
+        <div class="link-grid">${items}</div>
+      </div>`;
+
+    el.querySelector(".section-header").addEventListener("click", () => {
+      const nowCollapsed = el.classList.toggle("collapsed");
+      localStorage.setItem(collapseKey, nowCollapsed ? "1" : "0");
+    });
+
+    return el;
+  }
 
   // --- Raindrop API ---
   async function rdFetch(path) {
@@ -1241,11 +1560,11 @@
 
   async function loadLinks() {
     const main = document.getElementById("main");
-    main.innerHTML = '<div class="status"><span class="spinner"></span> Henter collections...</div>';
+    main.innerHTML = `<div class="status"><span class="spinner"></span> ${t("loading")}</div>`;
 
     const token = getToken();
     if (!token) {
-      main.innerHTML = '<div class="status">Ingen token konfigureret — klik på <strong>Indstillinger</strong> for at komme i gang.</div>';
+      main.innerHTML = `<div class="status">${t("noToken")}</div>`;
       openSettings();
       return;
     }
@@ -1264,7 +1583,7 @@
       const parent = allCollections.find(c => c.title.toLowerCase() === parentName.toLowerCase());
 
       if (!parent) {
-        main.innerHTML = `<div class="status error">Collection "${parentName}" ikke fundet. Tjek indstillinger.</div>`;
+        main.innerHTML = `<div class="status error">${t("collectionNotFound", parentName)}</div>`;
         return;
       }
 
@@ -1274,7 +1593,7 @@
         .sort((a, b) => a.sort - b.sort);
 
       if (children.length === 0) {
-        main.innerHTML = `<div class="status error">Ingen under-collections fundet i "${parentName}".</div>`;
+        main.innerHTML = `<div class="status error">${t("noChildCollections", parentName)}</div>`;
         return;
       }
 
@@ -1290,7 +1609,7 @@
 
     } catch (err) {
       console.error(err);
-      main.innerHTML = `<div class="status error">Fejl: ${err.message}</div>`;
+      main.innerHTML = `<div class="status error">${t("apiError", err.message)}</div>`;
     }
   }
 
@@ -1316,6 +1635,10 @@
   function renderSections(sections) {
     const main = document.getElementById("main");
     main.innerHTML = "";
+
+    const mostVisited = renderMostVisited();
+    if (mostVisited) main.appendChild(mostVisited);
+
     const hidden = getHiddenSections();
 
     sections.forEach(section => {
@@ -1356,7 +1679,7 @@
           <button class="section-hide-btn" title="Skjul sektion">✕</button>
         </div>
         <div class="link-grid-wrap">
-          <div class="link-grid">${items || '<div class="link-card" style="color:#64748b;border-style:dashed">Tom collection</div>'}</div>
+          <div class="link-grid">${items || `<div class="link-card" style="color:#64748b;border-style:dashed">${t("emptyCollection")}</div>`}</div>
         </div>
       `;
 
@@ -1369,7 +1692,7 @@
       el.querySelector(".section-hide-btn").addEventListener("click", () => {
         hideSection(section.title);
         el.remove();
-        showToast(`"${section.title}" skjult — <u style="cursor:pointer" id="undoHide">Fortryd</u>`);
+        showToast(`${t("toastHidden", section.title)} — <u style="cursor:pointer" id="undoHide">${t("toastUndo")}</u>`);
         setTimeout(() => {
           document.getElementById("undoHide")?.addEventListener("click", () => {
             unhideSection(section.title);
@@ -1384,11 +1707,12 @@
     // Tidsstempler for opdatering
     const ts = document.createElement("div");
     ts.style.cssText = "text-align:center;margin-top:48px;font-size:11px;color:var(--text-muted);opacity:0.5;";
-    ts.textContent = `Sidst opdateret: ${new Date().toLocaleTimeString("da-DK")}`;
+    ts.textContent = t("lastUpdated", new Date().toLocaleTimeString(t("dateLocale")));
     main.appendChild(ts);
   }
 
   // --- Init ---
+  applyLanguage();
   loadLinks();
 </script>
 
