@@ -93,6 +93,9 @@
     }
     .engine-btn:hover { border-color: #6366f1; color: var(--text-primary); }
     .engine-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+    .engine-btn.drag-over { border-color: #818cf8; background: #2d3748; }
+    .engine-btn[draggable] { cursor: grab; }
+    .engine-btn[draggable]:active { cursor: grabbing; }
 
     .engine-open {
       display: inline-flex;
@@ -840,32 +843,88 @@
   const savedEngineId = localStorage.getItem("rd_engine") || engines[0].id;
   let activeEngine = engines.find(e => e.id === savedEngineId) || engines[0];
 
+  // Sorter engines efter gemt rækkefølge
+  function getSortedEngines() {
+    const saved = localStorage.getItem("rd_engine_order");
+    if (!saved) return engines;
+    try {
+      const order = JSON.parse(saved);
+      return [...engines].sort((a, b) => {
+        const ai = order.indexOf(a.id), bi = order.indexOf(b.id);
+        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+      });
+    } catch { return engines; }
+  }
+
+  function saveEngineOrder() {
+    const ids = [...toggleEl.querySelectorAll(".engine-btn")].map(b => b.dataset.id);
+    localStorage.setItem("rd_engine_order", JSON.stringify(ids));
+  }
+
   // Render engine buttons
   const toggleEl = document.getElementById("engineToggle");
-  engines.forEach(eng => {
-    const btn = document.createElement("button");
-    btn.className = "engine-btn" + (eng.id === activeEngine.id ? " active" : "");
-    btn.innerHTML = `<span>${eng.label}</span><a class="engine-open" href="${eng.homeUrl}" target="_blank" rel="noopener" title="Åbn ${eng.label}">↗</a>`;
+  let dragSrc = null;
 
-    // Stop ↗ link from triggering the button click
-    btn.querySelector(".engine-open").addEventListener("click", e => e.stopPropagation());
+  function renderEngineButtons() {
+    toggleEl.innerHTML = "";
+    getSortedEngines().forEach(eng => {
+      const btn = document.createElement("button");
+      btn.className = "engine-btn" + (eng.id === activeEngine.id ? " active" : "");
+      btn.dataset.id = eng.id;
+      btn.draggable = true;
+      btn.innerHTML = `<span>${eng.label}</span><a class="engine-open" href="${eng.homeUrl}" target="_blank" rel="noopener" title="Åbn ${eng.label}">↗</a>`;
 
-    btn.addEventListener("click", async () => {
-      const q = document.getElementById("search").value.trim();
-      if (q) {
-        // Text in field → search immediately with this engine
-        await doSearch(eng, q);
-      } else {
-        // Empty field → just select engine
-        activeEngine = eng;
-        localStorage.setItem("rd_engine", eng.id);
-        toggleEl.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById("search").focus();
-      }
+      btn.querySelector(".engine-open").addEventListener("click", e => e.stopPropagation());
+
+      btn.addEventListener("click", async () => {
+        const q = document.getElementById("search").value.trim();
+        if (q) {
+          await doSearch(eng, q);
+        } else {
+          activeEngine = eng;
+          localStorage.setItem("rd_engine", eng.id);
+          toggleEl.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("search").focus();
+        }
+      });
+
+      // Drag-and-drop
+      btn.addEventListener("dragstart", e => {
+        dragSrc = btn;
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => btn.style.opacity = "0.4", 0);
+      });
+      btn.addEventListener("dragend", () => {
+        btn.style.opacity = "";
+        toggleEl.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("drag-over"));
+      });
+      btn.addEventListener("dragover", e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        if (btn !== dragSrc) {
+          toggleEl.querySelectorAll(".engine-btn").forEach(b => b.classList.remove("drag-over"));
+          btn.classList.add("drag-over");
+        }
+      });
+      btn.addEventListener("drop", e => {
+        e.preventDefault();
+        if (dragSrc && dragSrc !== btn) {
+          const btns = [...toggleEl.querySelectorAll(".engine-btn")];
+          const fromIdx = btns.indexOf(dragSrc);
+          const toIdx   = btns.indexOf(btn);
+          if (fromIdx < toIdx) btn.after(dragSrc);
+          else btn.before(dragSrc);
+          saveEngineOrder();
+        }
+        btn.classList.remove("drag-over");
+      });
+
+      toggleEl.appendChild(btn);
     });
-    toggleEl.appendChild(btn);
-  });
+  }
+
+  renderEngineButtons();
 
   async function doSearch(eng, q) {
     if (eng.clipboard) {
