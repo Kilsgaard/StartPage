@@ -62,6 +62,10 @@ StartPage/
 
 Upload the two files to any static web host (GitHub Pages, Netlify, your own server, etc.) and set the URL as your home page.
 
+**Option C — use it as your New Tab page (Edge)**
+
+Since browsers don't natively allow custom New Tab pages from local files, you can use a browser extension. The [New Tab Changer](https://microsoftedge.microsoft.com/addons/detail/new-tab-changer/dlbnebcbaeajdpekcdhmcgdhoodcjpeg) extension for Microsoft Edge lets you point your New Tab to any URL — including a locally hosted or GitHub Pages-hosted version of this page.
+
 ### 4. Configure
 
 When you first open the page, the Settings panel opens automatically. Enter your API token and collection name, then click **Save and load**.
