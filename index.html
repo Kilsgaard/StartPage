@@ -1043,18 +1043,20 @@
         return;
       }
 
-      // Find alle child collections under StartPage
-      const children = allCollections.filter(c => c.parent && c.parent.$id === parent._id);
+      // Find alle child collections under StartPage — sorter efter Raindrop's sort-felt
+      const children = allCollections
+        .filter(c => c.parent && c.parent.$id === parent._id)
+        .sort((a, b) => a.sort - b.sort);
 
       if (children.length === 0) {
         main.innerHTML = `<div class="status error">Ingen under-collections fundet i "${parentName}".</div>`;
         return;
       }
 
-      // Hent raindrops for hvert barn parallelt
+      // Hent raindrops for hvert barn parallelt — sort=-sort matcher drag-and-drop rækkefølge i Raindrop
       const sectionsData = await Promise.all(
         children.map(async col => {
-          const data = await rdFetch(`/raindrops/${col._id}?perpage=250`);
+          const data = await rdFetch(`/raindrops/${col._id}?perpage=250&sort=-sort`);
           return { title: col.title, items: data.items || [] };
         })
       );
