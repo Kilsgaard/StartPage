@@ -569,6 +569,13 @@
       <span id="gridColsLabel" style="font-size:13px;color:#94a3b8;min-width:36px;text-align:right">5</span>
     </div>
 
+    <label>Tile størrelse</label>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <input type="range" id="tileWidthRange" min="140" max="400" step="10" value="200"
+        style="flex:1;accent-color:#6366f1;cursor:pointer">
+      <span id="tileWidthLabel" style="font-size:13px;color:#94a3b8;min-width:46px;text-align:right">200px</span>
+    </div>
+
     <div class="row">
       <button class="btn btn-primary" id="saveBtn">Gem og indlæs</button>
       <button class="btn btn-ghost" id="cancelBtn">Annuller</button>
@@ -701,6 +708,19 @@
   });
 
   applyGridCols();
+
+  // --- Tile størrelse ---
+  function applyTileWidth() {
+    const w = localStorage.getItem("rd_tile_width") || "200";
+    document.documentElement.style.setProperty("--tile-width", w + "px");
+  }
+
+  document.getElementById("tileWidthRange").addEventListener("input", e => {
+    document.getElementById("tileWidthLabel").textContent = e.target.value + "px";
+    document.documentElement.style.setProperty("--tile-width", e.target.value + "px");
+  });
+
+  applyTileWidth();
 
   // --- Section gap ---
   function applySectionGap() {
@@ -911,6 +931,11 @@
     document.getElementById("gridColsRange").value = savedCols;
     document.getElementById("gridColsLabel").textContent = savedCols;
 
+    // Tile størrelse
+    const savedTileW = localStorage.getItem("rd_tile_width") || "200";
+    document.getElementById("tileWidthRange").value = savedTileW;
+    document.getElementById("tileWidthLabel").textContent = savedTileW + "px";
+
     overlay.classList.add("visible");
   }
 
@@ -972,6 +997,9 @@
 
     localStorage.setItem("rd_grid_cols", document.getElementById("gridColsRange").value);
     applyGridCols();
+
+    localStorage.setItem("rd_tile_width", document.getElementById("tileWidthRange").value);
+    applyTileWidth();
 
     overlay.classList.remove("visible");
     loadLinks();
