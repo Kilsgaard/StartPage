@@ -119,6 +119,12 @@ AI engines copy your query to the clipboard so you can paste it directly into th
 
 ---
 
+## Browser Compatibility
+
+Tested with **Microsoft Edge**. Should work in any modern Chromium-based browser, but has not been tested in Firefox or Safari.
+
+---
+
 ## Tech
 
 - **Pure HTML/CSS/JS** — zero build tooling, zero npm, zero frameworks
