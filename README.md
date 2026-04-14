@@ -4,6 +4,8 @@ A minimalist, single-file browser start page powered by the [Raindrop.io](https:
 
 **Live demo:** [kilsgaard.github.io/StartPage](https://kilsgaard.github.io/StartPage/)
 
+![Screenshot](StartPage.jpg)
+
 ---
 
 ## Features
